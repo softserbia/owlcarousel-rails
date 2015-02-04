@@ -65,10 +65,8 @@ if (typeof Object.create !== "function") {
         logIn : function () {
             var base = this;
 
-            base.$elem.data({
-                "owl-originalStyles": base.$elem.attr("style"),
-                "owl-originalClasses": base.$elem.attr("class")
-            });
+            base.$elem.data("owl-originalStyles", base.$elem.attr("style"));
+            base.$elem.data("owl-originalClasses", base.$elem.attr("class"));
 
             base.$elem.css({opacity: 0});
             base.orignalItems = base.options.items;
@@ -968,7 +966,7 @@ if (typeof Object.create !== "function") {
                     base.options.startDragging.apply(base, [base.$elem]);
                 }
 
-                if ((base.newRelativeX > 8 || base.newRelativeX < -8) && (base.browser.isTouch === true)) {
+                if ((Math.abs(base.newRelativeX) > 8 * base.options.horizontalDragInsensibility) && (base.browser.isTouch === true)) {
                     if (ev.preventDefault !== undefined) {
                         ev.preventDefault();
                     } else {
@@ -1165,9 +1163,7 @@ if (typeof Object.create !== "function") {
                     follow = true;
                 }
                 if (follow && itemNumber < base.currentItem + base.options.items && $lazyImg.length) {
-                    $lazyImg.each(function() {
-                        base.lazyPreload($item, $(this));
-                    });
+                    base.lazyPreload($item, $lazyImg);
                 }
             }
         },
@@ -1375,10 +1371,9 @@ if (typeof Object.create !== "function") {
                 }
             }
             base.clearEvents();
-            base.$elem.attr({
-                style: base.$elem.data("owl-originalStyles") || "",
-                class: base.$elem.data("owl-originalClasses")
-            });
+            base.$elem
+                .attr("style", base.$elem.data("owl-originalStyles") || "")
+                .attr("class", base.$elem.data("owl-originalClasses"));
         },
 
         destroy : function () {
@@ -1500,6 +1495,7 @@ if (typeof Object.create !== "function") {
         dragBeforeAnimFinish : true,
         mouseDrag : true,
         touchDrag : true,
+        horizontalDragInsensibility : 1,
 
         addClassActive : false,
         transitionStyle : false,
